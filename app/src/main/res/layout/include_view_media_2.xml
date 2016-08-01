@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                          xmlns:app="http://schemas.android.com/apk/res-auto"
+                                          android:id="@+id/media_view"
+                                          android:layout_width="match_parent"
+                                          android:layout_height="36dp"
+                                          android:background="@color/grey_400"
+                                         android:orientation="horizontal"
+    >
+
+
+    <ImageView
+
+        android:id="@+id/img_track"
+        android:layout_gravity="center"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_download_light"
+        app:layout_alignSelf="center"/>
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:layout_gravity="center"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="60dp"
+        app:alignItems="flex_start"
+        app:flexDirection="column"
+
+        app:layout_alignSelf="center"
+        app:layout_flexGrow="1">
+
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:text="Tittle"
+            android:textColor="@color/grey_900"
+            android:textSize="12sp"
+            app:layout_flexBasisPercent="100%"/>
+
+        <TextView
+            android:maxLength="110"
+            android:id="@+id/txt_des"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:text="DescriptionDescriptionDescripti"
+            android:textColor="@color/grey_700"
+            android:textSize="12sp"
+            app:layout_flexBasisPercent="100%"/>
+    </com.google.android.flexbox.FlexboxLayout>
+
+    <ImageView
+        android:id="@+id/player_play"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="8dp"
+        android:src="@drawable/icon_played"
+        android:layout_gravity="center"/>
+</LinearLayout>
