@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.flexbox.FlexboxLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+                                          xmlns:app="http://schemas.android.com/apk/res-auto"
+                                          android:id="@+id/media_view"
+                                          android:layout_width="match_parent"
+                                          android:layout_height="36dp"
+                                          android:background="@color/grey_400"
+                                          app:alignContent="center"
+                                          app:alignItems="flex_start"
+                                          app:flexDirection="row"
+                                          app:flexWrap="wrap">
+
+    <TextView
+        android:id="@+id/txt_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:text="Tittle"
+        android:textColor="@color/grey_900"
+        android:textSize="12sp"
+        app:layout_flexBasisPercent="100%"/>
+
+    <TextView
+        android:id="@+id/txt_des"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:text="DescriptionDescriptionDescripti"
+        android:textColor="@color/grey_700"
+        android:textSize="12sp"
+        app:layout_flexBasisPercent="100%"/>
+
+
+</com.google.android.flexbox.FlexboxLayout>
