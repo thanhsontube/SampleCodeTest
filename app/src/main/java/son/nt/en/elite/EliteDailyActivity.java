@@ -11,7 +11,6 @@ import android.widget.ProgressBar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Subscribe;
 
@@ -23,7 +22,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import son.nt.en.FireBaseConstant;
+import son.nt.en.MyApplication;
 import son.nt.en.R;
 import son.nt.en.base.BaseInjectActivity;
 import son.nt.en.elite.content.EliteContentActivity;
@@ -32,28 +33,34 @@ import son.nt.en.elite.di.ElitePresenterModule;
 import son.nt.en.otto.OttoBus;
 import son.nt.en.utils.Logger;
 
-public class EliteDailyActivity extends BaseInjectActivity implements EliteDailyContract.View
+public class EliteDailyActivity extends BaseInjectActivity implements ContractDailyElite.View
 {
     public static final String TAG = EliteDailyActivity.class.getSimpleName();
-    private RecyclerView       mMessageRecyclerView;
     private GridLayoutManager  mLinearLayoutManager;
-    private ProgressBar        mProgressBar;
 
     @BindView(R.id.CoordinatorLayoutChat)
     CoordinatorLayout          mCoordinatorLayout;
 
-    DatabaseReference          mFirebaseDatabaseReference;
+    @BindView(R.id.progressBar) ProgressBar mProgressBar;
+    @BindView(R.id.messageRecyclerView) RecyclerView mMessageRecyclerView;
+
+    @Inject DatabaseReference          mFirebaseDatabaseReference;
 
     private AdapterEliteDaily  mAdapter;
 
     @Inject
     EliteDailyPresenter        mPresenter;
 
+
+
     @Override
     public void injectPresenter()
     {
         //inject
-        DaggerEliteComponent.builder().elitePresenterModule(new ElitePresenterModule(this)).build().inject(this);
+        DaggerEliteComponent.builder().elitePresenterModule(new ElitePresenterModule(this))//
+                .appComponent(((MyApplication)getApplication()).getAppComponent())
+                .build()//
+                .inject(this);
     }
 
     @Override
@@ -62,21 +69,19 @@ public class EliteDailyActivity extends BaseInjectActivity implements EliteDaily
         super.onCreate(savedInstanceState);
         OttoBus.register(this);
         setContentView(R.layout.activity_elite_daily);
+        ButterKnife.bind(this);
 
         getSupportActionBar().setTitle("Reading");
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mMessageRecyclerView = (RecyclerView) findViewById(R.id.messageRecyclerView);
         mLinearLayoutManager = new GridLayoutManager(this, 1);
-        //        mLinearLayoutManager.setStackFromEnd(true);
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
         mAdapter = new AdapterEliteDaily(this);
 
         //        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
         // New child entries
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+//        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mFirebaseDatabaseReference.child(FireBaseConstant.TABLE_ELITE_DAILY).addValueEventListener(valueEventListener);
 
         mMessageRecyclerView.setAdapter(mAdapter);

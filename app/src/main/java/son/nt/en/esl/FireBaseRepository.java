@@ -12,6 +12,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Observer;
+import rx.subjects.PublishSubject;
 import son.nt.en.FireBaseConstant;
 import son.nt.en.utils.Logger;
 
@@ -21,75 +22,33 @@ import son.nt.en.utils.Logger;
 public class FireBaseRepository implements EslDailyContract.IRepository
 {
 
-    public static final String TAG = FireBaseRepository.class.getSimpleName();
+    public static final String        TAG   = FireBaseRepository.class.getSimpleName();
 
     DatabaseReference                 mDatabaseReference;
-    List<EslDailyDto> mList = new ArrayList<>();
+    List<EslDailyDto>                 mList = new ArrayList<>();
 
-    Observer<List<EslDailyDto>> observer;
+        Observer<List<EslDailyDto>> observer;
+    PublishSubject<List<EslDailyDto>> publishSubject2;
 
-    public FireBaseRepository(DatabaseReference mDatabaseReference
-                   )
+    public FireBaseRepository(DatabaseReference mDatabaseReference, PublishSubject<List<EslDailyDto>> publishSubject2)
     {
         this.mDatabaseReference = mDatabaseReference;
+        this.publishSubject2 = publishSubject2;
     }
 
-
-
     @Override
-    public void getData(Observer<List<EslDailyDto>> observer) {
+    public void getData()
+    {
         mDatabaseReference.child(FireBaseConstant.TABLE_ESL_DAILY).addValueEventListener(valueEventListener);
-        this.observer = observer;
+        //        this.observer = observer;
+        //        this.publishSubject2 = publishSubject2;
     }
 
-
-
     @Override
-    public Observable<List<EslDailyDto>> doSearch2(String keyword) {
-        Logger.debug(TAG, ">>>" + "doSearch2:" + keyword);
-
-        if (TextUtils.isEmpty(keyword))
-        {
-            return Observable.just(mList);
-        }
-
-        //search
-        List<EslDailyDto> list = new ArrayList<>();
-        for (EslDailyDto d : mList)
-        {
-            if (d.getHomeTitle().toLowerCase().contains(keyword.toLowerCase())
-                    || d.getHomeDescription().toLowerCase().contains(keyword.toLowerCase()))
-            {
-                list.add(d);
-
-            }
-
-        }
-        return Observable.just(list);
-    }
-
-
-    @Override
-    public List<EslDailyDto> doSearch3(String keyword) {
-        Logger.debug(TAG, ">>>" + "doSearch3:" + keyword);
-        if (TextUtils.isEmpty(keyword))
-        {
-            return mList;
-        }
-
-        //search
-        List<EslDailyDto> list = new ArrayList<>();
-        for (EslDailyDto d : mList)
-        {
-            if (d.getHomeTitle().toLowerCase().contains(keyword.toLowerCase())
-                    || d.getHomeDescription().toLowerCase().contains(keyword.toLowerCase()))
-            {
-                list.add(d);
-
-            }
-
-        }
-        return list;
+    public void getData(Observer<List<EslDailyDto>> callback)
+    {
+        mDatabaseReference.child(FireBaseConstant.TABLE_ESL_DAILY).addValueEventListener(valueEventListener);
+        this.observer = callback;
     }
 
     ValueEventListener valueEventListener = new ValueEventListener()
@@ -111,7 +70,8 @@ public class FireBaseRepository implements EslDailyContract.IRepository
              */
 
             observer.onNext(mList);
-//            listPublishSubject.onNext(list);
+//            publishSubject2.onNext(mList);
+            //            listPublishSubject.onNext(list);
 
         }
 
@@ -119,7 +79,83 @@ public class FireBaseRepository implements EslDailyContract.IRepository
         public void onCancelled(DatabaseError databaseError)
         {
             observer.onError(new Throwable(databaseError.toException()));
+//            publishSubject2.onError(new Throwable(databaseError.toException()));
 
         }
     };
+
+    @Override
+    public Observable<List<EslDailyDto>> doSearch2(String keyword)
+    {
+        Logger.debug(TAG, ">>>" + "doSearch2:" + keyword);
+
+        if (TextUtils.isEmpty(keyword))
+        {
+            return Observable.just(mList);
+        }
+
+        //search
+        List<EslDailyDto> list = new ArrayList<>();
+        for (EslDailyDto d : mList)
+        {
+            if (d.getHomeTitle().toLowerCase().contains(keyword.toLowerCase())
+                            || d.getHomeDescription().toLowerCase().contains(keyword.toLowerCase()))
+            {
+                list.add(d);
+
+            }
+
+        }
+        return Observable.just(list);
+    }
+
+    @Override
+    public List<EslDailyDto> doSearch3(String keyword)
+    {
+        Logger.debug(TAG, ">>>" + "doSearch3:" + keyword);
+        if (TextUtils.isEmpty(keyword))
+        {
+            return mList;
+        }
+
+        //search
+        List<EslDailyDto> list = new ArrayList<>();
+        for (EslDailyDto d : mList)
+        {
+            if (d.getHomeTitle().toLowerCase().contains(keyword.toLowerCase())
+                            || d.getHomeDescription().toLowerCase().contains(keyword.toLowerCase()))
+            {
+                list.add(d);
+
+            }
+
+        }
+        return list;
+    }
+
+    @Override
+    public void doSearch4(String keyword, Observer<List<EslDailyDto>> callback) {
+        Logger.debug(TAG, ">>>" + "doSearch4:" + keyword);
+        if (TextUtils.isEmpty(keyword))
+        {
+            callback.onNext(mList);
+            return;
+        }
+
+        //search
+        List<EslDailyDto> list = new ArrayList<>();
+        for (EslDailyDto d : mList)
+        {
+            if (d.getHomeTitle().toLowerCase().contains(keyword.toLowerCase())
+                    || d.getHomeDescription().toLowerCase().contains(keyword.toLowerCase()))
+            {
+                list.add(d);
+
+            }
+
+        }
+        callback.onNext(list);
+    }
+
+
 }

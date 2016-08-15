@@ -1,7 +1,6 @@
 package son.nt.en.esl;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -13,7 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observer;
-import son.nt.en.RxSchedulersOverrideRule;
+import rx.Scheduler;
+import rx.Subscription;
+import rx.android.plugins.RxAndroidPlugins;
+import rx.android.plugins.RxAndroidSchedulersHook;
+import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by sonnt on 8/1/16.
@@ -21,11 +25,12 @@ import son.nt.en.RxSchedulersOverrideRule;
 public class EslDailyPresenterTest
 {
 
-    @Rule
-    public final RxSchedulersOverrideRule mOverrideSchedulersRule = new RxSchedulersOverrideRule();
+//    @Rule
+//    public final RxSchedulersOverrideRule mOverrideSchedulersRule = new RxSchedulersOverrideRule();
 
     @Mock
     EslDailyContract.View                               mView;
+
     @Mock
     FireBaseRepository                                  mRepository;
 
@@ -35,13 +40,37 @@ public class EslDailyPresenterTest
     @Mock
     Observer<List<EslDailyDto>>                         observer;
 
+    PublishSubject<List<EslDailyDto>> publishSubject2;
+
+    @Mock
+    Subscription subscription;
+
+    @Mock
+    Subscription subscription2;
+
     EslDailyPresenter                                   mPresenter;
 
     @Before
     public void setUp() throws Exception
     {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new EslDailyPresenter(mView, mRepository);
+        RxAndroidPlugins.getInstance().registerSchedulersHook(new RxAndroidSchedulersHook() {
+            @Override
+            public Scheduler getMainThreadScheduler() {
+                return Schedulers.immediate();
+            }
+        });
+
+
+
+
+        publishSubject2 = PublishSubject.create();
+//
+//        subscription2 = publishSubject2
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(observer);
+        mPresenter = new EslDailyPresenter(mView, mRepository, publishSubject2);
     }
 
     @Test
@@ -54,9 +83,11 @@ public class EslDailyPresenterTest
         eslDailyDtos.add(new EslDailyDto());
 
         mPresenter.onStart();
-        Mockito.verify(mRepository).getData(observerArgumentCaptor.capture());
-        observerArgumentCaptor.getValue().onNext(eslDailyDtos);
-        Mockito.verify(mView).resultSearch(eslDailyDtos);
+        Mockito.verify(mRepository).getData();
+//        Mockito.verify(mRepository).getData(observerArgumentCaptor.capture());
+//        observerArgumentCaptor.getValue().onNext(eslDailyDtos);
+//        observerArgumentCaptor.getValue().onError(new Throwable());
+//        Mockito.verify(mView).resultSearch(eslDailyDtos);
 
     }
 
@@ -77,4 +108,23 @@ public class EslDailyPresenterTest
 
     }
 
+    @Test
+    public void testOnStart1() throws Exception {
+
+    }
+
+    @Test
+    public void testOnDestroy() throws Exception {
+        mPresenter.onDestroy();
+        Mockito.verify(subscription).unsubscribe();
+        Mockito.verify(subscription2).unsubscribe();
+
+    }
+
+    @Test
+    public void testAfterTextChanged1() throws Exception {
+        mPresenter.afterTextChanged("123");
+        Mockito.verify(mView).setVisibility(true);
+
+    }
 }

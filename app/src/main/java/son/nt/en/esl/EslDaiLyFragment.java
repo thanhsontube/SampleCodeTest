@@ -26,6 +26,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.subjects.PublishSubject;
 import son.nt.en.R;
 import son.nt.en.base.BaseFragment;
 import son.nt.en.otto.OttoBus;
@@ -83,11 +84,14 @@ public class EslDaiLyFragment extends BaseFragment implements View.OnClickListen
 
         MusicService.bindToMe(getContext(), serviceConnectionPlayer);
 
-        mPresenter = new EslDailyPresenter(this, new FireBaseRepository(FirebaseDatabase.getInstance().getReference()));
+        PublishSubject<List<EslDailyDto>> publishSubject2 = PublishSubject.create();
+        final FireBaseRepository repo = new FireBaseRepository(FirebaseDatabase.getInstance().getReference(), publishSubject2);
+        mPresenter = new EslDailyPresenter(this, repo, publishSubject2);
 
         mPresenter.onStart();
 
     }
+
 
     @Nullable
     @Override

@@ -28,12 +28,16 @@ public interface EslDailyContract {
     interface IRepository
     {
 
-        void getData(Observer<List<EslDailyDto>> observer);
+        void getData();
+
+        void getData(Observer<List<EslDailyDto>> callback);
 
 
         Observable<List<EslDailyDto>> doSearch2(String s);
 
         List<EslDailyDto> doSearch3(String s);
+
+        void doSearch4(String s, Observer<List<EslDailyDto>> callback);
 
 
     }
