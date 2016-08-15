@@ -20,15 +20,19 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import son.nt.en.FireBaseConstant;
 import son.nt.en.R;
-import son.nt.en.base.BaseActivity;
+import son.nt.en.base.BaseInjectActivity;
 import son.nt.en.elite.content.EliteContentActivity;
+import son.nt.en.elite.di.DaggerEliteComponent;
+import son.nt.en.elite.di.ElitePresenterModule;
 import son.nt.en.otto.OttoBus;
 import son.nt.en.utils.Logger;
 
-public class EliteDailyActivity extends BaseActivity
+public class EliteDailyActivity extends BaseInjectActivity implements EliteDailyContract.View
 {
     public static final String TAG = EliteDailyActivity.class.getSimpleName();
     private RecyclerView       mMessageRecyclerView;
@@ -41,6 +45,16 @@ public class EliteDailyActivity extends BaseActivity
     DatabaseReference          mFirebaseDatabaseReference;
 
     private AdapterEliteDaily  mAdapter;
+
+    @Inject
+    EliteDailyPresenter        mPresenter;
+
+    @Override
+    public void injectPresenter()
+    {
+        //inject
+        DaggerEliteComponent.builder().elitePresenterModule(new ElitePresenterModule(this)).build().inject(this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -66,10 +80,13 @@ public class EliteDailyActivity extends BaseActivity
         mFirebaseDatabaseReference.child(FireBaseConstant.TABLE_ELITE_DAILY).addValueEventListener(valueEventListener);
 
         mMessageRecyclerView.setAdapter(mAdapter);
+
+        mPresenter.onStart();
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy()
+    {
         OttoBus.unRegister(this);
         super.onDestroy();
     }
@@ -101,13 +118,14 @@ public class EliteDailyActivity extends BaseActivity
     };
 
     @Subscribe
-    public void getClick (BusElite busElite)
+    public void getClick(BusElite busElite)
     {
         EliteDto eliteDto = mAdapter.mValues.get(busElite.pos);
         Intent intent = new Intent(this, EliteContentActivity.class);
         intent.putExtra("data", Parcels.wrap(eliteDto));
         startActivity(intent);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
