@@ -135,26 +135,27 @@ public class FireBaseRepository implements EslDailyContract.IRepository
 
     @Override
     public void doSearch4(String keyword, Observer<List<EslDailyDto>> callback) {
-        Logger.debug(TAG, ">>>" + "doSearch4:" + keyword);
-        if (TextUtils.isEmpty(keyword))
-        {
-            callback.onNext(mList);
-            return;
-        }
-
-        //search
-        List<EslDailyDto> list = new ArrayList<>();
-        for (EslDailyDto d : mList)
-        {
-            if (d.getHomeTitle().toLowerCase().contains(keyword.toLowerCase())
-                    || d.getHomeDescription().toLowerCase().contains(keyword.toLowerCase()))
-            {
-                list.add(d);
-
-            }
-
-        }
-        callback.onNext(list);
+        Logger.debug(TAG, ">>>" + "doSearch4:" + keyword + ";mList:" + mList.size());
+        callback.onNext(mList);
+//        if (TextUtils.isEmpty(keyword))
+//        {
+//            callback.onNext(mList);
+//            return;
+//        }
+//
+//        //search
+//        List<EslDailyDto> list = new ArrayList<>();
+//        for (EslDailyDto d : mList)
+//        {
+//            if (d.getHomeTitle().toLowerCase().contains(keyword.toLowerCase())
+//                    || d.getHomeDescription().toLowerCase().contains(keyword.toLowerCase()))
+//            {
+//                list.add(d);
+//
+//            }
+//
+//        }
+//        callback.onNext(list);
     }
 
 

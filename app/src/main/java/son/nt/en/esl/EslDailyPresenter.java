@@ -6,9 +6,10 @@ import java.util.concurrent.TimeUnit;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
+import son.nt.en.utils.Logger;
 
 /**
  * Created by sonnt on 7/15/16.
@@ -38,19 +39,21 @@ public class EslDailyPresenter implements EslDailyContract.Presenter {
 //                .subscribe(observer);
 
         subscription = publishSubject.debounce(750, TimeUnit.MILLISECONDS)
-//                .doOnNext(new Action1<String>() {
-//                    @Override
-//                    public void call(String s) {
-//                        mRepository.doSearch4(s, observer2);
-//                    }
-//                })
-                .map(new Func1<String, Void>() {
+                .doOnNext(new Action1<String>() {
                     @Override
-                    public Void call(String s) {
+                    public void call(String s) {
+                        Logger.debug(TAG, ">>>" + "call s:" + s);
                         mRepository.doSearch4(s, observer2);
-                        return null;
+//                        mRepository.getData(observer2);
                     }
                 })
+//                .map(new Func1<String, Void>() {
+//                    @Override
+//                    public Void call(String s) {
+//                        mRepository.doSearch4(s, observer2);
+//                        return null;
+//                    }
+//                })
 
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
