@@ -12,6 +12,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        dagger2();
         startService(new Intent(getApplicationContext(), MusicService.class));
     }
 
@@ -19,5 +20,10 @@ public class MyApplication extends Application {
     public void onTerminate() {
         super.onTerminate();
         stopService(new Intent(getApplicationContext(), MusicService.class));
+    }
+
+    private void dagger2()
+    {
+
     }
 }
