@@ -10,9 +10,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
 import rx.Observer;
-import rx.subjects.PublishSubject;
 import son.nt.en.FireBaseConstant;
 import son.nt.en.utils.Logger;
 
@@ -22,26 +20,16 @@ import son.nt.en.utils.Logger;
 public class FireBaseRepository implements EslDailyContract.IRepository
 {
 
-    public static final String        TAG   = FireBaseRepository.class.getSimpleName();
+    public static final String  TAG   = FireBaseRepository.class.getSimpleName();
 
-    DatabaseReference                 mDatabaseReference;
-    List<EslDailyDto>                 mList = new ArrayList<>();
+    DatabaseReference           mDatabaseReference;
+    List<EslDailyDto>           mList = new ArrayList<>();
 
-        Observer<List<EslDailyDto>> observer;
-    PublishSubject<List<EslDailyDto>> publishSubject2;
+    Observer<List<EslDailyDto>> observer;
 
-    public FireBaseRepository(DatabaseReference mDatabaseReference, PublishSubject<List<EslDailyDto>> publishSubject2)
+    public FireBaseRepository(DatabaseReference mDatabaseReference)
     {
         this.mDatabaseReference = mDatabaseReference;
-        this.publishSubject2 = publishSubject2;
-    }
-
-    @Override
-    public void getData()
-    {
-        mDatabaseReference.child(FireBaseConstant.TABLE_ESL_DAILY).addValueEventListener(valueEventListener);
-        //        this.observer = observer;
-        //        this.publishSubject2 = publishSubject2;
     }
 
     @Override
@@ -70,28 +58,24 @@ public class FireBaseRepository implements EslDailyContract.IRepository
              */
 
             observer.onNext(mList);
-//            publishSubject2.onNext(mList);
-            //            listPublishSubject.onNext(list);
-
         }
 
         @Override
         public void onCancelled(DatabaseError databaseError)
         {
             observer.onError(new Throwable(databaseError.toException()));
-//            publishSubject2.onError(new Throwable(databaseError.toException()));
 
         }
     };
 
     @Override
-    public Observable<List<EslDailyDto>> doSearch2(String keyword)
+    public void doSearch4(String keyword, Observer<List<EslDailyDto>> callback)
     {
-        Logger.debug(TAG, ">>>" + "doSearch2:" + keyword);
-
+        Logger.debug(TAG, ">>>" + "doSearch4:" + keyword + ";mList:" + mList.size());
         if (TextUtils.isEmpty(keyword))
         {
-            return Observable.just(mList);
+            callback.onNext(mList);
+            return;
         }
 
         //search
@@ -106,13 +90,11 @@ public class FireBaseRepository implements EslDailyContract.IRepository
             }
 
         }
-        return Observable.just(list);
+        callback.onNext(list);
     }
 
     @Override
-    public List<EslDailyDto> doSearch3(String keyword)
-    {
-        Logger.debug(TAG, ">>>" + "doSearch3:" + keyword);
+    public List<EslDailyDto> doSearch3(String keyword) {
         if (TextUtils.isEmpty(keyword))
         {
             return mList;
@@ -123,7 +105,7 @@ public class FireBaseRepository implements EslDailyContract.IRepository
         for (EslDailyDto d : mList)
         {
             if (d.getHomeTitle().toLowerCase().contains(keyword.toLowerCase())
-                            || d.getHomeDescription().toLowerCase().contains(keyword.toLowerCase()))
+                    || d.getHomeDescription().toLowerCase().contains(keyword.toLowerCase()))
             {
                 list.add(d);
 
@@ -132,31 +114,4 @@ public class FireBaseRepository implements EslDailyContract.IRepository
         }
         return list;
     }
-
-    @Override
-    public void doSearch4(String keyword, Observer<List<EslDailyDto>> callback) {
-        Logger.debug(TAG, ">>>" + "doSearch4:" + keyword + ";mList:" + mList.size());
-        callback.onNext(mList);
-//        if (TextUtils.isEmpty(keyword))
-//        {
-//            callback.onNext(mList);
-//            return;
-//        }
-//
-//        //search
-//        List<EslDailyDto> list = new ArrayList<>();
-//        for (EslDailyDto d : mList)
-//        {
-//            if (d.getHomeTitle().toLowerCase().contains(keyword.toLowerCase())
-//                    || d.getHomeDescription().toLowerCase().contains(keyword.toLowerCase()))
-//            {
-//                list.add(d);
-//
-//            }
-//
-//        }
-//        callback.onNext(list);
-    }
-
-
 }

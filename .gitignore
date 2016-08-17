@@ -5,6 +5,8 @@
 # files for the dex VM
 *.dex
 
+*.hprof
+
 # Mac files
 .DS_Store
 
