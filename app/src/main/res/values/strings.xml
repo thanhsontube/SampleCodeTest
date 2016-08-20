@@ -19,4 +19,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="welcome_to">Welcome to %s</string>
+    <string name="thanks_installing">Thanks for installing - let\'s get you set up</string>
+    <string name="skip">Skip</string>
 </resources>
