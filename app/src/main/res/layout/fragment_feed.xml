@@ -3,14 +3,201 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-
-        android:background="@color/red_500"
         android:layout_width="match_parent"
-
         android:layout_height="match_parent">
 
     <LinearLayout android:layout_width="match_parent"
-                  android:layout_height="1800dp"
-                  android:fitsSystemWindows="false"
-    ></LinearLayout>
+                  android:layout_height="match_parent"
+                  android:orientation="vertical">
+
+        <!--Daily challenge-->
+        <FrameLayout android:layout_width="match_parent"
+                     android:layout_height="wrap_content">
+            <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    app:cardCornerRadius="4dp">
+                <LinearLayout android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:orientation="vertical">
+                    <FrameLayout
+                            android:layout_margin="8dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                        <TextView android:layout_width="wrap_content"
+                                  android:layout_height="wrap_content"
+                                  android:textSize="18sp"
+                                  android:textColor="@color/white"
+                                  android:text="Daily challenge"
+                                  android:textAllCaps="true"/>
+
+                        <TextView android:layout_width="wrap_content"
+                                  android:layout_height="wrap_content"
+                                  android:textSize="14sp"
+                                  android:layout_gravity="right"
+                                  android:textColor="@color/white"
+                                  android:text="View All"
+                                  android:textAllCaps="true"/>
+
+
+                    </FrameLayout>
+
+                    <android.support.v7.widget.RecyclerView
+                            android:id="@+id/feed_rcv_daily_challenge"
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp">
+
+                    </android.support.v7.widget.RecyclerView>
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+        </FrameLayout>
+
+        <!--Daily Listening-->
+        <FrameLayout android:layout_width="match_parent"
+                     android:layout_height="wrap_content">
+            <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    app:cardCornerRadius="4dp">
+                <LinearLayout android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:orientation="vertical">
+                    <FrameLayout
+                            android:layout_margin="8dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                        <TextView android:layout_width="wrap_content"
+                                  android:layout_height="wrap_content"
+                                  android:textSize="18sp"
+                                  android:textColor="@color/white"
+                                  android:text="Daily Listening"
+                                  android:textAllCaps="true"/>
+
+                        <TextView android:layout_width="wrap_content"
+                                  android:layout_height="wrap_content"
+                                  android:textSize="14sp"
+                                  android:layout_gravity="right"
+                                  android:textColor="@color/white"
+                                  android:text="View All"
+                                  android:textAllCaps="true"/>
+
+
+                    </FrameLayout>
+
+                    <android.support.v7.widget.RecyclerView
+                            android:id="@+id/feed_rcv_daily_listening"
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp">
+
+                    </android.support.v7.widget.RecyclerView>
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+        </FrameLayout>
+
+
+        <!--Daily Reading-->
+        <FrameLayout android:layout_width="match_parent"
+                     android:layout_height="wrap_content">
+            <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    app:cardCornerRadius="4dp">
+                <LinearLayout android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:orientation="vertical">
+                    <FrameLayout
+                            android:layout_margin="8dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                        <TextView android:layout_width="wrap_content"
+                                  android:layout_height="wrap_content"
+                                  android:textSize="18sp"
+                                  android:textColor="@color/white"
+                                  android:text="Daily Reading"
+                                  android:textAllCaps="true"/>
+
+                        <TextView android:layout_width="wrap_content"
+                                  android:layout_height="wrap_content"
+                                  android:textSize="14sp"
+                                  android:layout_gravity="right"
+                                  android:textColor="@color/white"
+                                  android:text="View All"
+                                  android:textAllCaps="true"/>
+
+
+                    </FrameLayout>
+
+                    <android.support.v7.widget.RecyclerView
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp">
+
+                    </android.support.v7.widget.RecyclerView>
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+        </FrameLayout>
+
+
+        <!--Daily Learning-->
+        <FrameLayout android:layout_width="match_parent"
+                     android:layout_height="wrap_content">
+            <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    app:cardCornerRadius="4dp">
+                <LinearLayout android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:orientation="vertical">
+                    <FrameLayout
+                            android:layout_margin="8dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                        <TextView android:layout_width="wrap_content"
+                                  android:layout_height="wrap_content"
+                                  android:textSize="18sp"
+                                  android:textColor="@color/white"
+                                  android:text="Daily Learning"
+                                  android:textAllCaps="true"/>
+
+                        <TextView android:layout_width="wrap_content"
+                                  android:layout_height="wrap_content"
+                                  android:textSize="14sp"
+                                  android:layout_gravity="right"
+                                  android:textColor="@color/white"
+                                  android:text="View All"
+                                  android:textAllCaps="true"/>
+
+
+                    </FrameLayout>
+
+                    <android.support.v7.widget.RecyclerView
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp">
+
+                    </android.support.v7.widget.RecyclerView>
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+        </FrameLayout>
+
+
+    </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

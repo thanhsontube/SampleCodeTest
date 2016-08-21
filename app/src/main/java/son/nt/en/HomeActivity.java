@@ -4,6 +4,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.bumptech.glide.Glide;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,6 +18,9 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -24,6 +29,7 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import son.nt.en.base.BaseActivity;
 import son.nt.en.base.BaseFragment;
+import son.nt.en.chat.ChatFragment;
 import son.nt.en.debug.DebugActivity;
 import son.nt.en.elite.EliteDailyActivity;
 import son.nt.en.esl.EslDaiLyFragment;
@@ -40,7 +46,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private ViewPager           mViewPager;
 
 //    @BindView(R.id.nav_name)
-//    TextView mTxtName;
+    TextView mTxtName;
+    ImageView mImgHeader;
 
     @Inject
     FirebaseUser mFirebaseUser;
@@ -67,6 +74,16 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View header = navigationView.getHeaderView(0);
+        mTxtName = (TextView) header.findViewById(R.id.nav_name);
+        mImgHeader = (ImageView) header.findViewById(R.id.nav_header_imageView);
+
+        if (mFirebaseUser != null)
+        {
+            mTxtName.setText(mFirebaseUser.getDisplayName());
+            Glide.with(this).load(mFirebaseUser.getPhotoUrl()).into(mImgHeader);
+        }
+
 
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager();
@@ -86,6 +103,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
         mHomeAdapter.addFragment(EslDaiLyFragment.newInstace());
         mHomeAdapter.addFragment(HelloChaoFragment.newInstace());
+        mHomeAdapter.addFragment(ChatFragment.newInstance());
         //        mHomeAdapter.addFragment (HelloChaoFragment.newInstace());
 
     }
