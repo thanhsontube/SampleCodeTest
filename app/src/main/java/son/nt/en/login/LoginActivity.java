@@ -14,13 +14,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -38,8 +34,6 @@ import son.nt.en.R;
 import son.nt.en.base.BaseActivity;
 import son.nt.en.google_client_api.DaggerGoogleApiComponent;
 import son.nt.en.google_client_api.GoogleApiClientModule;
-
-import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
@@ -82,11 +76,10 @@ public class LoginActivity extends BaseActivity
         ButterKnife.bind(this);
 
         isNotStart = getIntent().getBooleanExtra("REQUEST_START", false);
-        //inject
 
+        //inject
         GoogleApiClientModule googleApiClientModule = new GoogleApiClientModule(this, getString(R.string.default_web_client_id), this);
         DaggerGoogleApiComponent.builder().googleApiClientModule(googleApiClientModule).build().inject(this);
-
 
         // Set up the login form.
         mTxtWelcome.setText(getString(R.string.welcome_to, getString(R.string.app_name)));
@@ -94,67 +87,9 @@ public class LoginActivity extends BaseActivity
         mSignInButton.setOnClickListener(this);
         mTxtSkip.setOnClickListener(this);
         if (mFirebaseUser != null) {
-
             moveToHome();
         }
-
-
     }
-
-    private void checkSignIn() {
-
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
-
-
-    }
-
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mTxtSkip, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]
-                                    {READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]
-                    {READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
-            }
-        }
-    }
-
 
     @Override
     public void onClick(View v) {
@@ -229,10 +164,9 @@ public class LoginActivity extends BaseActivity
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        //Do nothing
 
     }
 
-    private void signOut() {
-        FirebaseAuth.getInstance().signOut();
-    }
+
 }

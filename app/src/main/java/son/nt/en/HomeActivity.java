@@ -1,10 +1,13 @@
 package son.nt.en;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.auth.FirebaseUser;
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -13,45 +16,48 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
+import butterknife.ButterKnife;
 import son.nt.en.base.BaseActivity;
 import son.nt.en.base.BaseFragment;
-import son.nt.en.chat.ChatFragment;
 import son.nt.en.debug.DebugActivity;
 import son.nt.en.elite.EliteDailyActivity;
 import son.nt.en.esl.EslDaiLyFragment;
+import son.nt.en.feed.FeedFragment;
+import son.nt.en.google_client_api.DaggerGoogleApiComponent;
+import son.nt.en.google_client_api.GoogleApiClientModule;
 import son.nt.en.hellochao.HelloChaoFragment;
 import son.nt.en.home.HomeAdapter;
-import son.nt.en.login.LoginActivity;
 
-public class HomeActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener
+public class HomeActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener,  GoogleApiClient.OnConnectionFailedListener
 {
     private static final String TAG = HomeActivity.class.getSimpleName();
     private HomeAdapter         mHomeAdapter;
     private ViewPager           mViewPager;
+
+//    @BindView(R.id.nav_name)
+//    TextView mTxtName;
+
+    @Inject
+    FirebaseUser mFirebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        ButterKnife.bind(this);
+
+        GoogleApiClientModule googleApiClientModule = new GoogleApiClientModule(this, getString(R.string.default_web_client_id), this);
+        DaggerGoogleApiComponent.builder().googleApiClientModule(googleApiClientModule).build().inject(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null)
-                                .show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
@@ -74,9 +80,12 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
         mHomeAdapter = new HomeAdapter(getSupportFragmentManager(), new ArrayList<BaseFragment>());
         mViewPager.setAdapter(mHomeAdapter);
+
+        mHomeAdapter.addFragment(FeedFragment.newInstance());
+
+
         mHomeAdapter.addFragment(EslDaiLyFragment.newInstace());
         mHomeAdapter.addFragment(HelloChaoFragment.newInstace());
-        mHomeAdapter.addFragment(ChatFragment.newInstance());
         //        mHomeAdapter.addFragment (HelloChaoFragment.newInstace());
 
     }
@@ -99,7 +108,10 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     public boolean onCreateOptionsMenu(Menu menu)
     {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
+//        getMenuInflater().inflate(R.menu.home, menu);
+        MenuItem menuItem = menu.add(0,10,0,"Search");
+        menuItem.setIcon(R.drawable.ic_gf_search);
+        menuItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
         return true;
     }
 
@@ -159,5 +171,8 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         return true;
     }
 
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
 }

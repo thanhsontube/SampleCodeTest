@@ -11,6 +11,7 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="Elite Daily"/>
         <item
+                android:visible="false"
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Slideshow"/>
