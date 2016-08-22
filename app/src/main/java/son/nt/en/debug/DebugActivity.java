@@ -1,12 +1,5 @@
 package son.nt.en.debug;
 
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -21,6 +14,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -33,6 +33,7 @@ import son.nt.en.elite.EliteContentDto;
 import son.nt.en.elite.EliteDto;
 import son.nt.en.esl.EslDailyDto;
 import son.nt.en.hellochao.HelloChaoSentences;
+import son.nt.en.jsoup.JsoupLoader;
 import son.nt.en.utils.DataTimesUtil;
 import son.nt.en.utils.Logger;
 
@@ -54,6 +55,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
         findViewById(R.id.elite).setOnClickListener(this);
         findViewById(R.id.elite_content).setOnClickListener(this);
         findViewById(R.id.elite_mixup).setOnClickListener(this);
+        findViewById(R.id.daily_hellochao).setOnClickListener(this);
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
     }
 
@@ -62,6 +64,12 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
     {
         switch (v.getId())
         {
+            case R.id.daily_hellochao:
+            {
+                JsoupLoader.loadDaily();
+
+                break;
+            }
             case R.id.readfile:
             {
                 //                test();

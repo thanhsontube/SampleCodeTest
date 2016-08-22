@@ -13,12 +13,6 @@ import son.nt.en.di.scoped.ActivityScoped;
 @Module
 public class FireBaseModule {
 
-    FirebaseAuth mFirebaseAuth;
-
-//    public FireBaseModule(FirebaseAuth firebaseAuth) {
-//        mFirebaseAuth = firebaseAuth;
-//    }
-
     @ActivityScoped
     @Provides
     FirebaseAuth provideFirebaseAuth()
@@ -32,4 +26,6 @@ public class FireBaseModule {
     {
         return firebaseAuth.getCurrentUser();
     }
+
+
 }

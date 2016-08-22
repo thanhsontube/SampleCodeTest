@@ -39,4 +39,11 @@
         android:layout_height="wrap_content"
         android:text="Elite Mixup"
         android:id="@+id/elite_mixup"/>
+
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="daily_hellochao"
+            android:id="@+id/daily_hellochao"/>
 </LinearLayout>
