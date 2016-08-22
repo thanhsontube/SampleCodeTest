@@ -6,11 +6,13 @@ import javax.inject.Inject;
 
 import rx.Observer;
 import son.nt.en.elite.EliteDto;
+import son.nt.en.utils.Logger;
 
 /**
  * Created by sonnt on 8/21/16.
  */
 public class FeedPresenter implements FeedContract.Presenter {
+    public static final String TAG = "FeedPresenter";
 
     FeedContract.IRepository mRepository;
     FeedContract.View mView;
@@ -40,6 +42,7 @@ public class FeedPresenter implements FeedContract.Presenter {
 
         @Override
         public void onNext(List<EliteDto> eliteDtos) {
+            Logger.debug(TAG, ">>>" + "onNext:" + eliteDtos.size());
 
         }
     };

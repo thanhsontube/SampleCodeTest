@@ -1,7 +1,6 @@
 package son.nt.en.feed.di;
 
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import dagger.Module;
 import dagger.Provides;
@@ -30,12 +29,6 @@ public class FeedPresenterModule
         return mView;
     }
 
-    @ActivityScoped
-    @Provides
-    DatabaseReference provideDatabaseReference()
-    {
-        return FirebaseDatabase.getInstance().getReference();
-    }
 
     @Provides
     @ActivityScoped

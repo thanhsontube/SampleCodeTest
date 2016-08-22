@@ -42,7 +42,7 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
         ButterKnife.bind(this, view);
 
         //DI
-        DaggerFeedComponent.builder().feedPresenterModule(new FeedPresenterModule(this)).build();
+        DaggerFeedComponent.builder().feedPresenterModule(new FeedPresenterModule(this)).build().inject(this);
 
 
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
