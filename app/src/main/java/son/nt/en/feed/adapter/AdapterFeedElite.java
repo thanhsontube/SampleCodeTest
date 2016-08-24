@@ -1,4 +1,4 @@
-package son.nt.en.elite;
+package son.nt.en.feed.adapter;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -15,21 +15,23 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import son.nt.en.R;
+import son.nt.en.elite.BusElite;
+import son.nt.en.elite.EliteDto;
 import son.nt.en.otto.OttoBus;
 
 /**
  * Created by Sonnt on 7/7/15.
  */
-public class AdapterEliteDaily extends RecyclerView.Adapter<AdapterEliteDaily.ViewHolder> {
+public class AdapterFeedElite extends RecyclerView.Adapter<AdapterFeedElite.ViewHolder> {
 
-    private static final String TAG = AdapterEliteDaily.class.getSimpleName();
+    private static final String TAG = AdapterFeedElite.class.getSimpleName();
     public List<EliteDto> mValues;
     Context context;
     private final WeakReference<Context> contextWeakReference;
 
     private int previous = 0;
 
-    public AdapterEliteDaily(Context cx) {
+    public AdapterFeedElite(Context cx) {
         this.context = cx;
         this.contextWeakReference = new WeakReference<>(cx);
     }
@@ -45,7 +47,7 @@ public class AdapterEliteDaily extends RecyclerView.Adapter<AdapterEliteDaily.Vi
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_elite_daily, viewGroup, false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_feed_elite_daily, viewGroup, false);
         return new ViewHolder(view);
     }
 

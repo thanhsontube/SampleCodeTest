@@ -8,14 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import son.nt.en.R;
 import son.nt.en.base.BaseFragment;
-import son.nt.en.elite.AdapterEliteDaily;
+import son.nt.en.elite.EliteDto;
 import son.nt.en.esl.AdapterEslDaily;
+import son.nt.en.feed.adapter.AdapterFeedElite;
 import son.nt.en.feed.di.DaggerFeedComponent;
 import son.nt.en.feed.di.FeedPresenterModule;
 
@@ -23,6 +26,12 @@ import son.nt.en.feed.di.FeedPresenterModule;
  * Created by sonnt on 8/21/16.
  */
 public class FeedFragment extends BaseFragment implements FeedContract.View {
+
+    //Dagger injected fields
+    @Inject
+    FeedPresenter mPresenter;
+
+
     @BindView(R.id.feed_rcv_daily_listening)
     RecyclerView mRecyclerViewListening;
     AdapterEslDaily mAdapter;
@@ -30,10 +39,15 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
     //reading
     @BindView(R.id.feed_rcv_reading)
     RecyclerView mRecyclerViewElite;
-    AdapterEliteDaily mAdapterEliteDaily;
 
-    @Inject
-    FeedPresenter mPresenter;
+
+    private AdapterFeedElite mAdapterFeedElite;
+
+    //construction
+    public static FeedFragment newInstance() {
+        FeedFragment f = new FeedFragment();
+        return f;
+    }
 
     @Nullable
     @Override
@@ -44,13 +58,16 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
         //DI
         DaggerFeedComponent.builder().feedPresenterModule(new FeedPresenterModule(this)).build().inject(this);
 
-
-        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
         //        mLinearLayoutManager.setStackFromEnd(true);
-        mRecyclerViewListening.setLayoutManager(mLinearLayoutManager);
-        mAdapter = new AdapterEslDaily(getActivity());
+//        mRecyclerViewListening.setLayoutManager(mLinearLayoutManager);
+//        mAdapter = new AdapterEslDaily(getActivity());
+//        mRecyclerViewListening.setAdapter(mAdapter);
 
-        mRecyclerViewListening.setAdapter(mAdapter);
+        // reading box
+        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
+        mRecyclerViewElite.setLayoutManager(mLinearLayoutManager);
+        mAdapterFeedElite = new AdapterFeedElite(getActivity());
+        mRecyclerViewElite.setAdapter(mAdapterFeedElite);
 
         mPresenter.onStart();
 
@@ -58,8 +75,8 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
         return view;
     }
 
-    public static FeedFragment newInstance() {
-        return new FeedFragment();
-
+    @Override
+    public void setEliteData(List<EliteDto> eliteDtos) {
+        mAdapterFeedElite.setData(eliteDtos);
     }
 }

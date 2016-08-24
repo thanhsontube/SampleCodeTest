@@ -13,6 +13,7 @@ public interface FeedContract {
     interface View {
 
 
+        void setEliteData(List<EliteDto> eliteDtos);
     }
 
     interface Presenter extends BasePresenter {
