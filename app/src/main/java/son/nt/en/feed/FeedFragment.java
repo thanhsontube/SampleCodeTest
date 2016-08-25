@@ -29,7 +29,7 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
 
     //Dagger injected fields
     @Inject
-    FeedPresenter mPresenter;
+    FeedContract.Presenter mPresenter;
 
 
     @BindView(R.id.feed_rcv_daily_listening)

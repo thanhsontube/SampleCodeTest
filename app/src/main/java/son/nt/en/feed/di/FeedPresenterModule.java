@@ -6,6 +6,7 @@ import dagger.Module;
 import dagger.Provides;
 import son.nt.en.di.scoped.ActivityScoped;
 import son.nt.en.feed.FeedContract;
+import son.nt.en.feed.FeedPresenter;
 import son.nt.en.feed.FeedRepository;
 
 /**
@@ -35,5 +36,11 @@ public class FeedPresenterModule
     FeedContract.IRepository provideRepository (DatabaseReference databaseReference)
     {
         return new FeedRepository(databaseReference);
+    }
+
+    @Provides
+    @ActivityScoped
+    FeedContract.Presenter providePresenter (FeedContract.IRepository repository, FeedContract.View view) {
+        return new FeedPresenter(repository, view);
     }
 }
