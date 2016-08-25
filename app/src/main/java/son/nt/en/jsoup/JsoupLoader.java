@@ -29,12 +29,17 @@ public class JsoupLoader {
 
                 Document document = Jsoup.connect(MsConst.HELLO_CHAO_THU_THACH_TRONG_NGAY).get();
                 Elements items = document.getElementsByAttributeValue("class", "box shadow light callout");
-                Elements data = items.get(0).getElementsByAttributeValue("class", "raw-menu");
-                Logger.debug(TAG, ">>>" + "loadDaily:" + data.size());
+                Elements data = items.get(0).getElementsByClass("raw-menu");
+
                 for (Element e : data.get(0).getAllElements()) {
-                    String link = e.getElementsByAttribute("href").attr("href");
-                    Logger.debug(TAG, ">>>" + "e:" + link);
+                    if (e.nodeName().equals("li")) {
+                        String link = e.getElementsByAttribute("href").attr("href");
+                        String textEng = e.getAllElements().get(1).text();
+                        String textVi = e.getAllElements().get(0).text().replace(textEng, "");
+                        Logger.debug(TAG, ">>>" + "link:" + link + "  ;textVi:" + textVi + ";textEng:" + textEng);
+                    }
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

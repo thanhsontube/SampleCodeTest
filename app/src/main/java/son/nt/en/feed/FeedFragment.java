@@ -19,8 +19,10 @@ import son.nt.en.base.BaseFragment;
 import son.nt.en.elite.EliteDto;
 import son.nt.en.esl.AdapterEslDaily;
 import son.nt.en.feed.adapter.AdapterFeedElite;
+import son.nt.en.feed.adapter.AdapterFeedHelloChao;
 import son.nt.en.feed.di.DaggerFeedComponent;
 import son.nt.en.feed.di.FeedPresenterModule;
+import son.nt.en.hellochao.HelloChaoSentences;
 
 /**
  * Created by sonnt on 8/21/16.
@@ -29,8 +31,13 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
 
     //Dagger injected fields
     @Inject
-    FeedPresenter mPresenter;
+    FeedContract.Presenter mPresenter;
 
+
+    //daily hc
+    @BindView(R.id.feed_rcv_daily_challenge)
+    RecyclerView mRecyclerViewDailyHc;
+    AdapterFeedHelloChao mAdapterDailyHc;
 
     @BindView(R.id.feed_rcv_daily_listening)
     RecyclerView mRecyclerViewListening;
@@ -58,10 +65,17 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
         //DI
         DaggerFeedComponent.builder().feedPresenterModule(new FeedPresenterModule(this)).build().inject(this);
 
+        LinearLayoutManager mLinearLayoutManagerHc = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
         //        mLinearLayoutManager.setStackFromEnd(true);
-//        mRecyclerViewListening.setLayoutManager(mLinearLayoutManager);
-//        mAdapter = new AdapterEslDaily(getActivity());
-//        mRecyclerViewListening.setAdapter(mAdapter);
+        mRecyclerViewDailyHc.setLayoutManager(mLinearLayoutManagerHc);
+        mAdapterDailyHc = new AdapterFeedHelloChao(getActivity());
+        mRecyclerViewDailyHc.setAdapter(mAdapterDailyHc);
+
+        LinearLayoutManager mLinearLayoutManagerListening = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
+        //        mLinearLayoutManager.setStackFromEnd(true);
+        mRecyclerViewListening.setLayoutManager(mLinearLayoutManagerListening);
+        mAdapter = new AdapterEslDaily(getActivity());
+        mRecyclerViewListening.setAdapter(mAdapter);
 
         // reading box
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
@@ -78,5 +92,10 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
     @Override
     public void setEliteData(List<EliteDto> eliteDtos) {
         mAdapterFeedElite.setData(eliteDtos);
+    }
+
+    @Override
+    public void setDailyHelloChao(List<HelloChaoSentences> helloChaoSentences) {
+        mAdapterDailyHc.setData(helloChaoSentences);
     }
 }

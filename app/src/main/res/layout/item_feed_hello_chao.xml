@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:layout_width="260dp"
+             android:layout_height="match_parent"
+             android:background="?android:selectableItemBackground">
+
+    <android.support.v7.widget.CardView
+            app:background="@drawable/bg_white_4dp_cornor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp">
+
+        <LinearLayout
+                android:layout_margin="8dp"
+                android:gravity="center"
+                android:id="@+id/card_content_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+            <TextView
+                    android:textStyle="bold"
+                    android:id="@+id/messageTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Son Handsome"
+                    android:textColor="@color/amber_A400"
+                    android:textSize="14sp"
+                    android:visibility="visible"/>
+
+            <TextView
+                    android:layout_marginTop="8dp"
+                    android:id="@+id/messengerTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="I'm working on bla bla"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:visibility="visible"/>
+
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+</FrameLayout>
