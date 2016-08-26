@@ -7,10 +7,10 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 import son.nt.en.elite.EliteDto;
+import son.nt.en.esl.EslDailyDto;
 import son.nt.en.hellochao.HelloChaoSentences;
-import son.nt.en.utils.Logger;
+import son.nt.en.utils.CompositeSubs;
 
 /**
  * Created by sonnt on 8/21/16.
@@ -21,7 +21,8 @@ public class FeedPresenter implements FeedContract.Presenter {
     FeedContract.IRepository mRepository;
     FeedContract.View mView;
 
-    CompositeSubscription mCompositeSubscription = new CompositeSubscription();
+//    CompositeSubscription mCompositeSubscription = new CompositeSubscription();
+    CompositeSubs mCompositeSubs;
 
     /**
      * Module {@link son.nt.en.feed.di.FeedPresenterModule} will provide dependencies required
@@ -33,41 +34,67 @@ public class FeedPresenter implements FeedContract.Presenter {
     public FeedPresenter(FeedContract.IRepository repository, FeedContract.View view) {
         mRepository = repository;
         mView = view;
+        mCompositeSubs = new CompositeSubs();
     }
 
     @Override
     public void onStart() {
-        //gets Elite data from Firebase.
-        mRepository.getElite(mObserver);
-
-
-
         Subscription subscription = mRepository.getDailyHelloChao()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(mSubscriber);
 
-        mCompositeSubscription.add(subscription);
+        //ESL
+        mRepository.getESL (mSubscriberEsl);
+
+        //gets Elite data from Firebase.
+        mRepository.getElite(mObserver);
+        mCompositeSubs.add(subscription);
+
+//        mCompositeSubscription.add(subscription);
     }
 
-    Subscriber<List<HelloChaoSentences>> mSubscriber = new Subscriber<List<HelloChaoSentences>>() {
+    @Override
+    public void onStop() {
+//        mCompositeSubscription.unsubscribe();
+        mCompositeSubs.removeAll();
+    }
+
+    Subscriber<List<EslDailyDto>> mSubscriberEsl = new Subscriber<List<EslDailyDto>>() {
         @Override
         public void onCompleted() {
-            Logger.debug(TAG, ">>>" + "onCompleted");
 
         }
 
         @Override
         public void onError(Throwable e) {
-            Logger.debug(TAG, ">>>" + "onError:" + e);
+
+        }
+
+        @Override
+        public void onNext(List<EslDailyDto> eslDailyDtos) {
+            mView.setEslData (eslDailyDtos);
+
+        }
+    };
+
+    Subscriber<List<HelloChaoSentences>> mSubscriber = new Subscriber<List<HelloChaoSentences>>() {
+        @Override
+        public void onCompleted() {
+//            Logger.debug(TAG, ">>>" + "onCompleted");
+
+        }
+
+        @Override
+        public void onError(Throwable e) {
+//            Logger.debug(TAG, ">>>" + "onError:" + e);
 
         }
 
         @Override
         public void onNext(List<HelloChaoSentences> helloChaoSentences) {
-            Logger.debug(TAG, ">>>" + "onNext:" + helloChaoSentences.size());
+//            Logger.debug(TAG, ">>>" + "onNext:" + helloChaoSentences.size());
             mView.setDailyHelloChao(helloChaoSentences);
-
         }
     };
 
@@ -84,7 +111,7 @@ public class FeedPresenter implements FeedContract.Presenter {
 
         @Override
         public void onNext(List<EliteDto> eliteDtos) {
-            Logger.debug(TAG, ">>>" + "onNext:" + eliteDtos.size());
+//            Logger.debug(TAG, ">>>" + "onNext:" + eliteDtos.size());
             mView.setEliteData(eliteDtos);
 
         }

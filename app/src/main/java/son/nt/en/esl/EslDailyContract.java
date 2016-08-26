@@ -3,7 +3,7 @@ package son.nt.en.esl;
 import java.util.List;
 
 import rx.Observer;
-import son.nt.en.base.BasePresenter;
+import son.nt.en.base.IBasePresenter;
 
 /**
  * Created by sonnt on 7/14/16.
@@ -18,7 +18,7 @@ public interface EslDailyContract
         void setVisibility(boolean b);
     }
 
-    interface Presenter extends BasePresenter
+    interface Presenter extends IBasePresenter
     {
 
         void onDestroy();

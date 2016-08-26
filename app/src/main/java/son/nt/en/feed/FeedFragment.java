@@ -18,6 +18,7 @@ import son.nt.en.R;
 import son.nt.en.base.BaseFragment;
 import son.nt.en.elite.EliteDto;
 import son.nt.en.esl.AdapterEslDaily;
+import son.nt.en.esl.EslDailyDto;
 import son.nt.en.feed.adapter.AdapterFeedElite;
 import son.nt.en.feed.adapter.AdapterFeedHelloChao;
 import son.nt.en.feed.di.DaggerFeedComponent;
@@ -39,11 +40,12 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
     RecyclerView mRecyclerViewDailyHc;
     AdapterFeedHelloChao mAdapterDailyHc;
 
+    //daily listening
     @BindView(R.id.feed_rcv_daily_listening)
     RecyclerView mRecyclerViewListening;
     AdapterEslDaily mAdapter;
 
-    //reading
+    //daily reading
     @BindView(R.id.feed_rcv_reading)
     RecyclerView mRecyclerViewElite;
 
@@ -66,7 +68,7 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
         DaggerFeedComponent.builder().feedPresenterModule(new FeedPresenterModule(this)).build().inject(this);
 
         LinearLayoutManager mLinearLayoutManagerHc = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
-        //        mLinearLayoutManager.setStackFromEnd(true);
+        mLinearLayoutManagerHc.setStackFromEnd(false);
         mRecyclerViewDailyHc.setLayoutManager(mLinearLayoutManagerHc);
         mAdapterDailyHc = new AdapterFeedHelloChao(getActivity());
         mRecyclerViewDailyHc.setAdapter(mAdapterDailyHc);
@@ -90,16 +92,32 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
     }
 
     @Override
+    public void onDestroy() {
+        mPresenter.onStop();
+        super.onDestroy();
+    }
+
+    @Override
     public void setEliteData(List<EliteDto> eliteDtos) {
         mAdapterFeedElite.setData(eliteDtos);
+        if (mAdapterFeedElite.getItemCount() > 0) {
+            mRecyclerViewElite.smoothScrollToPosition(0);
+        }
     }
 
     @Override
     public void setDailyHelloChao(List<HelloChaoSentences> helloChaoSentences) {
         mAdapterDailyHc.setData(helloChaoSentences);
-        if (mAdapterDailyHc.getItemCount() > 0)
-        {
+        if (mAdapterDailyHc.getItemCount() > 0) {
             mRecyclerViewDailyHc.smoothScrollToPosition(0);
+        }
+    }
+
+    @Override
+    public void setEslData(List<EslDailyDto> eslDailyDtos) {
+        mAdapter.setData(eslDailyDtos);
+        if (mAdapter.getItemCount() > 0) {
+            mRecyclerViewListening.smoothScrollToPosition(0);
         }
     }
 }

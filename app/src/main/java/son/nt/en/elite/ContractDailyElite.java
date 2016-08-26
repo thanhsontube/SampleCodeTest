@@ -1,6 +1,6 @@
 package son.nt.en.elite;
 
-import son.nt.en.base.BasePresenter;
+import son.nt.en.base.IBasePresenter;
 
 /**
  * Created by sonnt on 7/14/16.
@@ -10,7 +10,7 @@ public interface ContractDailyElite {
 
     }
 
-    interface Presenter extends BasePresenter
+    interface Presenter extends IBasePresenter
     {
 
     }

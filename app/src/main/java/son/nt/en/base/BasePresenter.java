@@ -1,8 +1,13 @@
 package son.nt.en.base;
 
+import rx.subscriptions.CompositeSubscription;
+
 /**
- * Created by sonnt on 7/13/16.
+ * Created by sonnt on 8/26/16.
  */
-public interface BasePresenter {
-    void onStart();
+public abstract class BasePresenter {
+
+    private CompositeSubscription mCompositeSubscription;
+
+
 }

@@ -1,6 +1,6 @@
 package son.nt.en.chat;
 
-import son.nt.en.base.BasePresenter;
+import son.nt.en.base.IBasePresenter;
 
 /**
  * Created by sonnt on 7/13/16.
@@ -15,7 +15,7 @@ public interface ChatContract
         void clearMessage(String s);
     }
 
-    interface Presenter extends BasePresenter
+    interface Presenter extends IBasePresenter
     {
 
         void sendMessage(String s);

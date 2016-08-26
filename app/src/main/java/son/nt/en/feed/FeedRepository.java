@@ -18,9 +18,11 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import son.nt.en.FireBaseConstant;
 import son.nt.en.MsConst;
 import son.nt.en.elite.EliteDto;
+import son.nt.en.esl.EslDailyDto;
 import son.nt.en.hellochao.HelloChaoSentences;
 import son.nt.en.utils.Logger;
 
@@ -31,7 +33,8 @@ public class FeedRepository implements FeedContract.IRepository {
 
 
     public static final String TAG = FeedRepository.class.getSimpleName();
-    Observer<List<EliteDto>> listObserver;
+    Observer<List<EliteDto>> subscriberElite;
+    Observer<List<EslDailyDto>> subscriberEsl;
 
     DatabaseReference mDatabaseReference;
 
@@ -42,10 +45,17 @@ public class FeedRepository implements FeedContract.IRepository {
 
     @Override
     public void getElite(Observer<List<EliteDto>> listObserver) {
-        this.listObserver = listObserver;
+        this.subscriberElite = listObserver;
 
         Query query = mDatabaseReference.child(FireBaseConstant.TABLE_ELITE_DAILY).limitToFirst(5);
-        query.addListenerForSingleValueEvent(mValueEventListener);
+        query.addListenerForSingleValueEvent(mEliteValueEventListener);
+    }
+
+    @Override
+    public void getESL(Subscriber<List<EslDailyDto>> subscriberEsl) {
+        this.subscriberEsl = subscriberEsl;
+        Query query = mDatabaseReference.child(FireBaseConstant.TABLE_ESL_DAILY).limitToFirst(5);
+        query.addListenerForSingleValueEvent(mESlValueEventListener);
     }
 
     @Override
@@ -80,7 +90,28 @@ public class FeedRepository implements FeedContract.IRepository {
     }
 
 
-    ValueEventListener mValueEventListener = new ValueEventListener() {
+    ValueEventListener mESlValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            List<EslDailyDto> list = new ArrayList<>();
+            for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                EslDailyDto post = postSnapshot.getValue(EslDailyDto.class);
+                list.add(post);
+            }
+
+            subscriberEsl.onNext(list);
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            List<EliteDto> list = new ArrayList<>();
+            subscriberElite.onNext(list);
+        }
+    };
+
+
+    ValueEventListener mEliteValueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
             List<EliteDto> list = new ArrayList<>();
@@ -89,14 +120,14 @@ public class FeedRepository implements FeedContract.IRepository {
                 list.add(post);
             }
 
-            listObserver.onNext(list);
+            subscriberElite.onNext(list);
 
         }
 
         @Override
         public void onCancelled(DatabaseError databaseError) {
             List<EliteDto> list = new ArrayList<>();
-            listObserver.onNext(list);
+            subscriberElite.onNext(list);
         }
     };
 

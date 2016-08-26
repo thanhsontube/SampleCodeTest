@@ -5,8 +5,10 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Observer;
-import son.nt.en.base.BasePresenter;
+import rx.Subscriber;
+import son.nt.en.base.IBasePresenter;
 import son.nt.en.elite.EliteDto;
+import son.nt.en.esl.EslDailyDto;
 import son.nt.en.hellochao.HelloChaoSentences;
 
 /**
@@ -19,10 +21,12 @@ public interface FeedContract {
         void setEliteData(List<EliteDto> eliteDtos);
 
         void setDailyHelloChao(List<HelloChaoSentences> helloChaoSentences);
+
+        void setEslData(List<EslDailyDto> eslDailyDtos);
     }
 
-    interface Presenter extends BasePresenter {
-
+    interface Presenter extends IBasePresenter {
+        void onStop();
 
     }
 
@@ -30,5 +34,7 @@ public interface FeedContract {
         void getElite (Observer<List<EliteDto>> listObserver);
 
         Observable<List<HelloChaoSentences>> getDailyHelloChao();
+
+        void getESL(Subscriber<List<EslDailyDto>> subscriberEsl);
     }
 }
