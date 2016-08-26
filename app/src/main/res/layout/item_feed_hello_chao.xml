@@ -3,11 +3,11 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:app="http://schemas.android.com/apk/res-auto"
              android:layout_width="260dp"
-             android:layout_height="match_parent"
-             android:background="?android:selectableItemBackground">
+             android:background="?android:selectableItemBackground"
+             android:layout_height="match_parent">
 
     <android.support.v7.widget.CardView
-            app:background="@drawable/bg_white_4dp_cornor"
+            app:cardBackgroundColor="@color/white"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="8dp"
@@ -15,8 +15,11 @@
             android:layout_marginRight="8dp">
 
         <LinearLayout
-                android:layout_margin="8dp"
+
+                android:background="@color/black"
+                android:layout_margin="2dp"
                 android:gravity="center"
+                android:padding="6dp"
                 android:id="@+id/card_content_holder"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

@@ -97,5 +97,9 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
     @Override
     public void setDailyHelloChao(List<HelloChaoSentences> helloChaoSentences) {
         mAdapterDailyHc.setData(helloChaoSentences);
+        if (mAdapterDailyHc.getItemCount() > 0)
+        {
+            mRecyclerViewDailyHc.smoothScrollToPosition(0);
+        }
     }
 }
