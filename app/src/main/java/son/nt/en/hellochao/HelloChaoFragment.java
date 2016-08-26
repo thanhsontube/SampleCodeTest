@@ -1,5 +1,14 @@
 package son.nt.en.hellochao;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import com.bumptech.glide.Glide;
+import com.squareup.otto.Subscribe;
+
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -20,14 +29,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.squareup.otto.Subscribe;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,25 +46,25 @@ import son.nt.en.utils.Logger;
 /**
  * Created by sonnt on 7/11/16.
  */
-public class HelloChaoFragment extends BaseFragment implements HelloChaoContract.View, View.OnClickListener, TextWatcher
-{
+public class HelloChaoFragment extends BaseFragment implements HelloChaoContract.View, View.OnClickListener, TextWatcher {
 
-    public static final String  TAG    = HelloChaoFragment.class.getSimpleName();
-    private RecyclerView        mMessageRecyclerView;
+    public static final String TAG = HelloChaoFragment.class.getSimpleName();
+    private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
-    private ProgressBar         mProgressBar;
+    private ProgressBar mProgressBar;
 
     @BindView(R.id.CoordinatorLayoutChat)
-    CoordinatorLayout           mCoordinatorLayout;
+    CoordinatorLayout mCoordinatorLayout;
 
     @BindView(R.id.txt_search)
-    EditText                    txtSearch;
+    EditText txtSearch;
     @BindView(R.id.btn_clear)
-    View                        btnClear;
+    View btnClear;
 
 
     @BindView(R.id.player_play)
     ImageView mImgPlay;
+
     @BindView(R.id.img_track)
     ImageView mImgTrack;
 
@@ -73,27 +74,25 @@ public class HelloChaoFragment extends BaseFragment implements HelloChaoContract
     @BindView(R.id.txt_des)
     TextView mTxtDes;
 
-    DatabaseReference           mFirebaseDatabaseReference;
+    DatabaseReference mFirebaseDatabaseReference;
 
-    private AdapterHelloChao    mAdapter;
+    private AdapterHelloChao mAdapter;
 
-    boolean                     isBind = false;
+    boolean isBind = false;
 
     MusicService mPlayService;
 
-    SearchHandler               mSearchHandler;
+    SearchHandler mSearchHandler;
 
     HelloChaoContract.Presenter mPresenter;
 
-    public static HelloChaoFragment newInstace()
-    {
+    public static HelloChaoFragment newInstace() {
         HelloChaoFragment f = new HelloChaoFragment();
         return f;
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState)
-    {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         OttoBus.register(this);
         MusicService.bindToMe(getContext(), serviceConnectionPlayer);
@@ -101,12 +100,10 @@ public class HelloChaoFragment extends BaseFragment implements HelloChaoContract
     }
 
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         OttoBus.unRegister(this);
         getActivity().unbindService(serviceConnectionPlayer);
-        if (mSearchHandler != null)
-        {
+        if (mSearchHandler != null) {
             mSearchHandler.removeMessage();
             mSearchHandler = null;
         }
@@ -116,8 +113,7 @@ public class HelloChaoFragment extends BaseFragment implements HelloChaoContract
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                    @Nullable Bundle savedInstanceState)
-    {
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_hello_chao, container, false);
         ButterKnife.bind(this, view);
         // Initialize ProgressBar and RecyclerView.
@@ -136,7 +132,7 @@ public class HelloChaoFragment extends BaseFragment implements HelloChaoContract
         // New child entries
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mFirebaseDatabaseReference.child(FireBaseConstant.TABLE_HELLO_CHAO).orderByChild("text")
-                        .addValueEventListener(valueEventListener);
+                .addValueEventListener(valueEventListener);
 
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
         mMessageRecyclerView.setAdapter(mAdapter);
@@ -148,11 +144,9 @@ public class HelloChaoFragment extends BaseFragment implements HelloChaoContract
 
     }
 
-    ServiceConnection serviceConnectionPlayer = new ServiceConnection()
-    {
+    ServiceConnection serviceConnectionPlayer = new ServiceConnection() {
         @Override
-        public void onServiceConnected(ComponentName name, IBinder service)
-        {
+        public void onServiceConnected(ComponentName name, IBinder service) {
             MusicService.LocalBinder localBinder = (MusicService.LocalBinder) service;
             mPlayService = localBinder.getService();
             isBind = true;
@@ -160,51 +154,43 @@ public class HelloChaoFragment extends BaseFragment implements HelloChaoContract
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName name)
-        {
+        public void onServiceDisconnected(ComponentName name) {
             isBind = false;
             mPlayService = null;
         }
     };
 
     @Subscribe
-    public void getSelection(BusSentence busSentence)
-    {
-        if (mPlayService != null)
-        {
+    public void getSelection(BusSentence busSentence) {
+        if (mPlayService != null) {
             mPlayService.setDataToService(mAdapter.mValues);
             mPlayService.playAtPos(busSentence.pos);
         }
 
     }
+
     /**
      * called from {@link MusicService#play()}
-     * @param goPlayer
      */
 
     @Subscribe
-    public void getFromService(GoPlayer goPlayer)
-    {
+    public void getFromService(GoPlayer goPlayer) {
         mTxtTitle.setText(goPlayer.title);
         mTxtDes.setText(goPlayer.des);
         mImgPlay.setImageResource(goPlayer.command == GoPlayer.DO_PLAY ? R.drawable.icon_paused : R.drawable.icon_played);
-        if (goPlayer.image != null)
-        {
+        if (goPlayer.image != null) {
             Glide.with(this).load(goPlayer.image).fitCenter().into(mImgTrack);
         }
 
     }
 
-    ValueEventListener valueEventListener = new ValueEventListener()
-    {
+    ValueEventListener valueEventListener = new ValueEventListener() {
         @Override
-        public void onDataChange(DataSnapshot dataSnapshot)
-        {
+        public void onDataChange(DataSnapshot dataSnapshot) {
             Logger.debug(TAG, ">>>" + " valueEventListener onDataChange");
             mProgressBar.setVisibility(ProgressBar.INVISIBLE);
             List<HelloChaoSentences> list = new ArrayList<>();
-            for (DataSnapshot postSnapshot : dataSnapshot.getChildren())
-            {
+            for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                 HelloChaoSentences post = postSnapshot.getValue(HelloChaoSentences.class);
                 list.add(post);
             }
@@ -212,35 +198,28 @@ public class HelloChaoFragment extends BaseFragment implements HelloChaoContract
             mAdapter.setData(list);
             mPresenter.setData(list);
             mMessageRecyclerView.scrollToPosition(0);
-            if (mPlayService != null)
-            {
+            if (mPlayService != null) {
                 mPlayService.setDataToService(list);
             }
 
         }
 
         @Override
-        public void onCancelled(DatabaseError databaseError)
-        {
+        public void onCancelled(DatabaseError databaseError) {
             mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
         }
     };
 
     @Override
-    public void onClick(View v)
-    {
-        switch (v.getId())
-        {
-            case R.id.btn_clear:
-            {
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_clear: {
                 txtSearch.setText("");
                 break;
             }
-            case R.id.player_play:
-            {
-                if (mPlayService != null)
-                {
+            case R.id.player_play: {
+                if (mPlayService != null) {
                     mPlayService.play();
                 }
                 break;
@@ -249,30 +228,23 @@ public class HelloChaoFragment extends BaseFragment implements HelloChaoContract
     }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after)
-    {
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
     }
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count)
-    {
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
 
     }
 
     @Override
-    public void afterTextChanged(Editable s)
-    {
-        if (s.length() > 0)
-        {
+    public void afterTextChanged(Editable s) {
+        if (s.length() > 0) {
             btnClear.setVisibility(View.VISIBLE);
-        }
-        else
-        {
+        } else {
             btnClear.setVisibility(View.GONE);
         }
-        if (mSearchHandler == null)
-        {
+        if (mSearchHandler == null) {
             mSearchHandler = new SearchHandler(this);
         }
         mSearchHandler.removeMessage();
@@ -280,8 +252,7 @@ public class HelloChaoFragment extends BaseFragment implements HelloChaoContract
 
     }
 
-    private void doSearch()
-    {
+    private void doSearch() {
         String keyword = txtSearch.getText().toString();
         Logger.debug(TAG, ">>>" + "doSearch:" + keyword);
         mPresenter.doSearch(keyword);
@@ -289,34 +260,27 @@ public class HelloChaoFragment extends BaseFragment implements HelloChaoContract
     }
 
     @Override
-    public void resultSearch(List<HelloChaoSentences> list)
-    {
+    public void resultSearch(List<HelloChaoSentences> list) {
         mAdapter.setData(list);
 
     }
 
-    private static class SearchHandler extends Handler
-    {
-        public static final int          WHAT_SEARCH                    = 1;
+    private static class SearchHandler extends Handler {
+        public static final int WHAT_SEARCH = 1;
 
         WeakReference<HelloChaoFragment> helloChaoFragmentWeakReference = new WeakReference<HelloChaoFragment>(null);
 
-        public SearchHandler(HelloChaoFragment helloChaoFragment)
-        {
+        public SearchHandler(HelloChaoFragment helloChaoFragment) {
             helloChaoFragmentWeakReference = new WeakReference<HelloChaoFragment>(helloChaoFragment);
 
         }
 
         @Override
-        public void handleMessage(Message message)
-        {
-            switch (message.what)
-            {
-                case WHAT_SEARCH:
-                {
+        public void handleMessage(Message message) {
+            switch (message.what) {
+                case WHAT_SEARCH: {
                     HelloChaoFragment f = helloChaoFragmentWeakReference.get();
-                    if (f != null)
-                    {
+                    if (f != null) {
                         f.doSearch();
                     }
                     break;
@@ -325,13 +289,11 @@ public class HelloChaoFragment extends BaseFragment implements HelloChaoContract
             }
         }
 
-        public void removeMessage()
-        {
+        public void removeMessage() {
             removeMessages(WHAT_SEARCH);
         }
 
-        public void doSearch()
-        {
+        public void doSearch() {
             sendEmptyMessageDelayed(WHAT_SEARCH, 750);
         }
     }

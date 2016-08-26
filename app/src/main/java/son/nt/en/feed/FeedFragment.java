@@ -1,12 +1,20 @@
 package son.nt.en.feed;
 
+import com.bumptech.glide.Glide;
+import com.squareup.otto.Subscribe;
+
+import android.content.ComponentName;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -23,7 +31,10 @@ import son.nt.en.feed.adapter.AdapterFeedElite;
 import son.nt.en.feed.adapter.AdapterFeedHelloChao;
 import son.nt.en.feed.di.DaggerFeedComponent;
 import son.nt.en.feed.di.FeedPresenterModule;
+import son.nt.en.hellochao.BusSentence;
 import son.nt.en.hellochao.HelloChaoSentences;
+import son.nt.en.otto.OttoBus;
+import son.nt.en.service.GoPlayer;
 import son.nt.en.service.MusicService;
 
 /**
@@ -51,6 +62,19 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
     RecyclerView mRecyclerViewElite;
     private AdapterFeedElite mAdapterElite;
 
+    //media
+    @BindView(R.id.player_play)
+    ImageView mImgPlay;
+
+    @BindView(R.id.img_track)
+    ImageView mImgTrack;
+
+    @BindView(R.id.txt_title)
+    TextView mTxtTitle;
+
+    @BindView(R.id.txt_des)
+    TextView mTxtDes;
+
     //service
     MusicService mPlayService;
 
@@ -58,6 +82,13 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
     public static FeedFragment newInstance() {
         FeedFragment f = new FeedFragment();
         return f;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        OttoBus.register(this);
+        createService();
     }
 
     @Nullable
@@ -99,6 +130,7 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
     @Override
     public void onDestroy() {
         mPresenter.onStop();
+        OttoBus.unRegister(this);
         super.onDestroy();
     }
 
@@ -118,4 +150,53 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
     public void setEliteData(List<EliteDto> eliteDtos) {
         mAdapterElite.setData(eliteDtos);
     }
+
+    private void createService() {
+        MusicService.bindToMe(getContext(), serviceConnectionPlayer);
+    }
+
+    ServiceConnection serviceConnectionPlayer = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicService.LocalBinder localBinder = (MusicService.LocalBinder) service;
+            mPlayService = localBinder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mPlayService = null;
+        }
+    };
+
+    /**
+     * {@link son.nt.en.feed.adapter.AdapterFeedHelloChao.ViewHolder#ViewHolder(View)}
+     * @param busSentence
+     */
+    @Subscribe
+    public void getSelection(BusSentence busSentence) {
+        if (mPlayService != null) {
+            mPlayService.setDataToService(mAdapterDailyHc.mValues);
+            mPlayService.playAtPos(busSentence.pos);
+        }
+
+    }
+
+    /**
+     * called from {@link MusicService#play()}
+     * @param goPlayer
+     */
+
+    @Subscribe
+    public void getFromService(GoPlayer goPlayer)
+    {
+        mTxtTitle.setText(goPlayer.title);
+        mTxtDes.setText(goPlayer.des);
+        mImgPlay.setImageResource(goPlayer.command == GoPlayer.DO_PLAY ? R.drawable.icon_paused : R.drawable.icon_played);
+        if (goPlayer.image != null)
+        {
+            Glide.with(this).load(goPlayer.image).fitCenter().into(mImgTrack);
+        }
+
+    }
+
 }
