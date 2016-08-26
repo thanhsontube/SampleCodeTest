@@ -5,6 +5,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.bumptech.glide.Glide;
+import com.squareup.otto.Subscribe;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import son.nt.en.base.BaseActivity;
 import son.nt.en.base.BaseFragment;
@@ -38,6 +40,8 @@ import son.nt.en.google_client_api.DaggerGoogleApiComponent;
 import son.nt.en.google_client_api.GoogleApiClientModule;
 import son.nt.en.hellochao.HelloChaoFragment;
 import son.nt.en.home.HomeAdapter;
+import son.nt.en.otto.OttoBus;
+import son.nt.en.service.GoPlayer;
 
 public class HomeActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = HomeActivity.class.getSimpleName();
@@ -49,6 +53,19 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     TextView mTxtName;
     ImageView mImgHeader;
 
+    //media
+    @BindView(R.id.player_play)
+    ImageView mImgPlay;
+
+    @BindView(R.id.img_track)
+    ImageView mImgTrack;
+
+    @BindView(R.id.txt_title)
+    TextView mTxtTitle;
+
+    @BindView(R.id.txt_des)
+    TextView mTxtDes;
+
 
     private HomeAdapter mHomeAdapter;
     private ViewPager mViewPager;
@@ -59,6 +76,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
+        OttoBus.register(this);
 
         setupDI();
 
@@ -84,7 +102,6 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.ll_main, FeedFragment.newInstance())
-                .addToBackStack(null)
                 .commit();
 
 
@@ -93,6 +110,12 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
 //        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 //        tabLayout.setupWithViewPager(mViewPager);
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        OttoBus.unRegister(this);
+        super.onDestroy();
     }
 
     private void setupViewPager() {
@@ -180,5 +203,18 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     private void setupDI() {
         GoogleApiClientModule googleApiClientModule = new GoogleApiClientModule(this, getString(R.string.default_web_client_id), this);
         DaggerGoogleApiComponent.builder().googleApiClientModule(googleApiClientModule).build().inject(this);
+    }
+
+    @Subscribe
+    public void getFromService(GoPlayer goPlayer)
+    {
+        mTxtTitle.setText(goPlayer.title);
+        mTxtDes.setText(goPlayer.des);
+        mImgPlay.setImageResource(goPlayer.command == GoPlayer.DO_PLAY ? R.drawable.icon_paused : R.drawable.icon_played);
+        if (goPlayer.image != null)
+        {
+            Glide.with(this).load(goPlayer.image).fitCenter().into(mImgTrack);
+        }
+
     }
 }

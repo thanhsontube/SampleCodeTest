@@ -1,6 +1,5 @@
 package son.nt.en.feed;
 
-import com.bumptech.glide.Glide;
 import com.squareup.otto.Subscribe;
 
 import android.content.ComponentName;
@@ -13,8 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.List;
 
@@ -63,17 +60,17 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
     private AdapterFeedElite mAdapterElite;
 
     //media
-    @BindView(R.id.player_play)
-    ImageView mImgPlay;
-
-    @BindView(R.id.img_track)
-    ImageView mImgTrack;
-
-    @BindView(R.id.txt_title)
-    TextView mTxtTitle;
-
-    @BindView(R.id.txt_des)
-    TextView mTxtDes;
+//    @BindView(R.id.player_play)
+//    ImageView mImgPlay;
+//
+//    @BindView(R.id.img_track)
+//    ImageView mImgTrack;
+//
+//    @BindView(R.id.txt_title)
+//    TextView mTxtTitle;
+//
+//    @BindView(R.id.txt_des)
+//    TextView mTxtDes;
 
     //service
     MusicService mPlayService;
@@ -189,13 +186,13 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
     @Subscribe
     public void getFromService(GoPlayer goPlayer)
     {
-        mTxtTitle.setText(goPlayer.title);
-        mTxtDes.setText(goPlayer.des);
-        mImgPlay.setImageResource(goPlayer.command == GoPlayer.DO_PLAY ? R.drawable.icon_paused : R.drawable.icon_played);
-        if (goPlayer.image != null)
-        {
-            Glide.with(this).load(goPlayer.image).fitCenter().into(mImgTrack);
-        }
+//        mTxtTitle.setText(goPlayer.title);
+//        mTxtDes.setText(goPlayer.des);
+//        mImgPlay.setImageResource(goPlayer.command == GoPlayer.DO_PLAY ? R.drawable.icon_paused : R.drawable.icon_played);
+//        if (goPlayer.image != null)
+//        {
+//            Glide.with(this).load(goPlayer.image).fitCenter().into(mImgTrack);
+//        }
 
     }
 
