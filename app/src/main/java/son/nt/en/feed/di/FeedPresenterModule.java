@@ -8,6 +8,7 @@ import son.nt.en.di.scoped.ActivityScoped;
 import son.nt.en.feed.FeedContract;
 import son.nt.en.feed.FeedPresenter;
 import son.nt.en.feed.FeedRepository;
+import son.nt.en.utils.CompositeSubs;
 
 /**
  * Created by sonnt on 8/15/16.
@@ -40,7 +41,14 @@ public class FeedPresenterModule
 
     @Provides
     @ActivityScoped
-    FeedContract.Presenter providePresenter (FeedContract.IRepository repository, FeedContract.View view) {
-        return new FeedPresenter(repository, view);
+    CompositeSubs provideCompositeSubs ()
+    {
+        return new CompositeSubs();
+    }
+
+    @Provides
+    @ActivityScoped
+    FeedContract.Presenter providePresenter (FeedContract.IRepository repository, FeedContract.View view, CompositeSubs compositeSubs) {
+        return new FeedPresenter(repository, view, compositeSubs);
     }
 }

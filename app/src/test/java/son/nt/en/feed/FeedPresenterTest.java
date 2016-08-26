@@ -9,13 +9,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.subscriptions.CompositeSubscription;
+import rx.Single;
+import rx.SingleSubscriber;
 import son.nt.en.RxSchedulersOverrideRule;
 import son.nt.en.elite.EliteDto;
 import son.nt.en.esl.EslDailyDto;
@@ -30,41 +29,48 @@ public class FeedPresenterTest {
 
     @Rule
     public final RxSchedulersOverrideRule mOverrideSchedulersRule = new RxSchedulersOverrideRule();
+
     @Mock
     FeedContract.View mView;
 
     @Mock
     FeedContract.IRepository mRepository;
 
-
     @Mock
     CompositeSubs mCompositeSubs;
-    @Captor
-    ArgumentCaptor<Subscriber<List<EslDailyDto>>> mSubscriberArgumentCaptor;
 
     @Captor
-    ArgumentCaptor<Observer<List<EliteDto>>> captorElites;
+    ArgumentCaptor<SingleSubscriber<List<EslDailyDto>>> mSubscriberArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<SingleSubscriber<List<EliteDto>>> captorElites;
+
+    @Captor
+    ArgumentCaptor<Single<List<HelloChaoSentences>>> captorHc;
 
     List<HelloChaoSentences> helloChaoSentences;
-
-    CompositeSubscription mCompositeSubscription = new CompositeSubscription();
 
     FeedPresenter mPresenter;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new FeedPresenter(mRepository, mView);
+        mPresenter = new FeedPresenter(mRepository, mView, mCompositeSubs);
         helloChaoSentences = createHcs();
-        Mockito.when(mRepository.getDailyHelloChao()).thenReturn(Observable.just(helloChaoSentences));
+        Mockito.when(mRepository.getDailyHelloChao()).thenReturn(Single.just(helloChaoSentences));
     }
 
     @Test
     public void testOnStartHC() throws Exception {
-//        List<HelloChaoSentences> helloChaoSentences = createHcs();
-//        Mockito.when(mRepository.getDailyHelloChao()).thenReturn(Observable.just(helloChaoSentences));
         mPresenter.onStart();
         Mockito.verify(mView).setDailyHelloChao(helloChaoSentences);
+    }
+
+    @Test
+    public void testOnStartHCFail() throws Exception {
+        Mockito.when(mRepository.getDailyHelloChao()).thenReturn(Single.error(new Throwable()));
+        mPresenter.onStart();
+        Mockito.verify(mView).setDailyHelloChao(new ArrayList<>());
     }
 
     @Test
@@ -72,38 +78,48 @@ public class FeedPresenterTest {
         List<EslDailyDto> esls  = createEsls();
         mPresenter.onStart();
         Mockito.verify(mRepository).getESL(mSubscriberArgumentCaptor.capture());
-        mSubscriberArgumentCaptor.getValue().onNext(esls);
+        mSubscriberArgumentCaptor.getValue().onSuccess(esls);
         Mockito.verify(mView).setEslData(esls);
     }
 
     @Test
-    public void testOnStartElite() {
-        List<EliteDto> elietes  = createElites();
+    public void testOnStartEslError() {
+        mPresenter.onStart();
+        Mockito.verify(mRepository).getESL(mSubscriberArgumentCaptor.capture());
+        mSubscriberArgumentCaptor.getValue().onError(new Throwable());
+        Mockito.verify(mView).setEslData(new ArrayList<>());
+    }
+
+    @Test
+    public void testOnStartEliteOnSuccess() {
+        List<EliteDto> elites = createElites();
         mPresenter.onStart();
         Mockito.verify(mRepository).getElite(captorElites.capture());
-        captorElites.getValue().onNext(elietes);
-        Mockito.verify(mView).setEliteData(elietes);
+        captorElites.getValue().onSuccess(elites);
+        Mockito.verify(mView).setEliteData(elites);
+    }
+
+    @Test
+    public void testOnStartEliteOnError() {
+        mPresenter.onStart();
+        Mockito.verify(mRepository).getElite(captorElites.capture());
+        captorElites.getValue().onError(new Throwable());
+        Mockito.verify(mView).setEliteData(new ArrayList<>());
     }
 
 
     @Test
     public void testOnStop() throws Exception {
         mPresenter.onStop();
-//        Mockito.verify(mCompositeSubscription).unsubscribe();
-//        mSubscription.unsubscribe();
         Mockito.verify(mCompositeSubs).removeAll();
-
-
-
     }
 
-    private List<EliteDto> createElites ()
-    {
+    private List<EliteDto> createElites() {
         EliteDto eslDailyDto = new EliteDto();
         return Collections.singletonList(eslDailyDto);
     }
-    private List<EslDailyDto> createEsls ()
-    {
+
+    private List<EslDailyDto> createEsls() {
         EslDailyDto eslDailyDto = new EslDailyDto();
         return Collections.singletonList(eslDailyDto);
     }

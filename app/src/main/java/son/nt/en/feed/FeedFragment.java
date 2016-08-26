@@ -24,6 +24,7 @@ import son.nt.en.feed.adapter.AdapterFeedHelloChao;
 import son.nt.en.feed.di.DaggerFeedComponent;
 import son.nt.en.feed.di.FeedPresenterModule;
 import son.nt.en.hellochao.HelloChaoSentences;
+import son.nt.en.service.MusicService;
 
 /**
  * Created by sonnt on 8/21/16.
@@ -40,17 +41,18 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
     RecyclerView mRecyclerViewDailyHc;
     AdapterFeedHelloChao mAdapterDailyHc;
 
-    //daily listening
+    //daily listening ESL
     @BindView(R.id.feed_rcv_daily_listening)
     RecyclerView mRecyclerViewListening;
-    AdapterEslDaily mAdapter;
+    AdapterEslDaily mAdapterEsl;
 
-    //daily reading
+    //daily reading Elite
     @BindView(R.id.feed_rcv_reading)
     RecyclerView mRecyclerViewElite;
+    private AdapterFeedElite mAdapterElite;
 
-
-    private AdapterFeedElite mAdapterFeedElite;
+    //service
+    MusicService mPlayService;
 
     //construction
     public static FeedFragment newInstance() {
@@ -67,23 +69,26 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
         //DI
         DaggerFeedComponent.builder().feedPresenterModule(new FeedPresenterModule(this)).build().inject(this);
 
+        //hc
         LinearLayoutManager mLinearLayoutManagerHc = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
-        mLinearLayoutManagerHc.setStackFromEnd(false);
+        mLinearLayoutManagerHc.setStackFromEnd(true);
         mRecyclerViewDailyHc.setLayoutManager(mLinearLayoutManagerHc);
         mAdapterDailyHc = new AdapterFeedHelloChao(getActivity());
         mRecyclerViewDailyHc.setAdapter(mAdapterDailyHc);
 
-        LinearLayoutManager mLinearLayoutManagerListening = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
-        //        mLinearLayoutManager.setStackFromEnd(true);
-        mRecyclerViewListening.setLayoutManager(mLinearLayoutManagerListening);
-        mAdapter = new AdapterEslDaily(getActivity());
-        mRecyclerViewListening.setAdapter(mAdapter);
+        //ESL
+        LinearLayoutManager mLinearLayoutManagerEsl = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
+        mLinearLayoutManagerEsl.setStackFromEnd(true);
+        mRecyclerViewListening.setLayoutManager(mLinearLayoutManagerEsl);
+        mAdapterEsl = new AdapterEslDaily(getActivity());
+        mRecyclerViewListening.setAdapter(mAdapterEsl);
 
-        // reading box
-        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
-        mRecyclerViewElite.setLayoutManager(mLinearLayoutManager);
-        mAdapterFeedElite = new AdapterFeedElite(getActivity());
-        mRecyclerViewElite.setAdapter(mAdapterFeedElite);
+        // Elite
+        LinearLayoutManager mLinearLayoutManagerElite = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
+        mRecyclerViewElite.setLayoutManager(mLinearLayoutManagerElite);
+        mLinearLayoutManagerElite.setStackFromEnd(true);
+        mAdapterElite = new AdapterFeedElite(getActivity());
+        mRecyclerViewElite.setAdapter(mAdapterElite);
 
         mPresenter.onStart();
 
@@ -97,27 +102,20 @@ public class FeedFragment extends BaseFragment implements FeedContract.View {
         super.onDestroy();
     }
 
-    @Override
-    public void setEliteData(List<EliteDto> eliteDtos) {
-        mAdapterFeedElite.setData(eliteDtos);
-        if (mAdapterFeedElite.getItemCount() > 0) {
-            mRecyclerViewElite.smoothScrollToPosition(0);
-        }
-    }
 
     @Override
     public void setDailyHelloChao(List<HelloChaoSentences> helloChaoSentences) {
         mAdapterDailyHc.setData(helloChaoSentences);
-        if (mAdapterDailyHc.getItemCount() > 0) {
-            mRecyclerViewDailyHc.smoothScrollToPosition(0);
-        }
     }
 
     @Override
     public void setEslData(List<EslDailyDto> eslDailyDtos) {
-        mAdapter.setData(eslDailyDtos);
-        if (mAdapter.getItemCount() > 0) {
-            mRecyclerViewListening.smoothScrollToPosition(0);
-        }
+        mAdapterEsl.setData(eslDailyDtos);
+
+    }
+
+    @Override
+    public void setEliteData(List<EliteDto> eliteDtos) {
+        mAdapterElite.setData(eliteDtos);
     }
 }

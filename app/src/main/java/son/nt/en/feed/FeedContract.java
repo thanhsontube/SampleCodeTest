@@ -3,9 +3,8 @@ package son.nt.en.feed;
 
 import java.util.List;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
+import rx.Single;
+import rx.SingleSubscriber;
 import son.nt.en.base.IBasePresenter;
 import son.nt.en.elite.EliteDto;
 import son.nt.en.esl.EslDailyDto;
@@ -31,10 +30,11 @@ public interface FeedContract {
     }
 
     interface IRepository {
-        void getElite (Observer<List<EliteDto>> listObserver);
 
-        Observable<List<HelloChaoSentences>> getDailyHelloChao();
+        void getElite (SingleSubscriber<List<EliteDto>> getElites);
 
-        void getESL(Subscriber<List<EslDailyDto>> subscriberEsl);
+        Single<List<HelloChaoSentences>> getDailyHelloChao();
+
+        void getESL(SingleSubscriber<List<EslDailyDto>> getEsl);
     }
 }

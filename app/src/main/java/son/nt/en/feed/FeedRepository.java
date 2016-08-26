@@ -16,9 +16,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
+import rx.Single;
+import rx.SingleSubscriber;
 import son.nt.en.FireBaseConstant;
 import son.nt.en.MsConst;
 import son.nt.en.elite.EliteDto;
@@ -33,8 +32,8 @@ public class FeedRepository implements FeedContract.IRepository {
 
 
     public static final String TAG = FeedRepository.class.getSimpleName();
-    Observer<List<EliteDto>> subscriberElite;
-    Observer<List<EslDailyDto>> subscriberEsl;
+    SingleSubscriber<List<EliteDto>> subscriberElite;
+    SingleSubscriber<List<EslDailyDto>> subscriberEsl;
 
     DatabaseReference mDatabaseReference;
 
@@ -44,47 +43,51 @@ public class FeedRepository implements FeedContract.IRepository {
     }
 
     @Override
-    public void getElite(Observer<List<EliteDto>> listObserver) {
-        this.subscriberElite = listObserver;
+    public void getElite(SingleSubscriber<List<EliteDto>> getElites) {
+        this.subscriberElite = getElites;
 
         Query query = mDatabaseReference.child(FireBaseConstant.TABLE_ELITE_DAILY).limitToFirst(5);
         query.addListenerForSingleValueEvent(mEliteValueEventListener);
     }
 
     @Override
-    public void getESL(Subscriber<List<EslDailyDto>> subscriberEsl) {
+    public void getESL(SingleSubscriber<List<EslDailyDto>> subscriberEsl) {
         this.subscriberEsl = subscriberEsl;
+
         Query query = mDatabaseReference.child(FireBaseConstant.TABLE_ESL_DAILY).limitToFirst(5);
         query.addListenerForSingleValueEvent(mESlValueEventListener);
     }
 
     @Override
-    public Observable<List<HelloChaoSentences>> getDailyHelloChao() {
+    public Single<List<HelloChaoSentences>> getDailyHelloChao() {
 
-        return Observable.create((Observable.OnSubscribe<List<HelloChaoSentences>>) subscriber -> {
-            try {
+        return Single.create(new Single.OnSubscribe<List<HelloChaoSentences>>() {
+            @Override
+            public void call(SingleSubscriber<? super List<HelloChaoSentences>> singleSubscriber) {
+                try {
 
-                Document document = Jsoup.connect(MsConst.HELLO_CHAO_THU_THACH_TRONG_NGAY).get();
-                Elements items = document.getElementsByAttributeValue("class", "box shadow light callout");
-                Elements data = items.get(0).getElementsByClass("raw-menu");
+                    Document document = Jsoup.connect(MsConst.HELLO_CHAO_THU_THACH_TRONG_NGAY).get();
+                    Elements items = document.getElementsByAttributeValue("class", "box shadow light callout");
+                    Elements data = items.get(0).getElementsByClass("raw-menu");
 
-                List<HelloChaoSentences> helloChaoSentences = new ArrayList<>();
-                HelloChaoSentences helloChaoSentence;
-                for (Element e : data.get(0).getAllElements()) {
-                    if (e.nodeName().equals("li")) {
-                        String link = e.getElementsByAttribute("href").attr("href");
-                        String textEng = e.getAllElements().get(1).text();
-                        String textVi = e.getAllElements().get(0).text().replace(textEng, "");
-                        Logger.debug(TAG, ">>>" + "link:" + link + " ;textVi:" + textVi + ";textEng:" + textEng);
-                        helloChaoSentence = new HelloChaoSentences(textEng, link, textVi);
-                        helloChaoSentences.add(helloChaoSentence);
+                    List<HelloChaoSentences> helloChaoSentences = new ArrayList<>();
+                    HelloChaoSentences helloChaoSentence;
+                    for (Element e : data.get(0).getAllElements()) {
+                        if (e.nodeName().equals("li")) {
+                            String link = e.getElementsByAttribute("href").attr("href");
+                            String textEng = e.getAllElements().get(1).text();
+                            String textVi = e.getAllElements().get(0).text().replace(textEng, "");
+                            Logger.debug(TAG, ">>>" + "link:" + link + " ;textVi:" + textVi + ";textEng:" + textEng);
+                            helloChaoSentence = new HelloChaoSentences(textEng, link, textVi);
+                            helloChaoSentences.add(helloChaoSentence);
+                        }
                     }
-                }
-                subscriber.onNext(helloChaoSentences);
-                subscriber.onCompleted();
 
-            } catch (Exception e) {
-                subscriber.onError(e);
+                    singleSubscriber.onSuccess(helloChaoSentences);
+
+                } catch (Exception e) {
+                    singleSubscriber.onError(e);
+                }
             }
         });
     }
@@ -98,15 +101,12 @@ public class FeedRepository implements FeedContract.IRepository {
                 EslDailyDto post = postSnapshot.getValue(EslDailyDto.class);
                 list.add(post);
             }
-
-            subscriberEsl.onNext(list);
-
+            subscriberEsl.onSuccess(list);
         }
 
         @Override
         public void onCancelled(DatabaseError databaseError) {
-            List<EliteDto> list = new ArrayList<>();
-            subscriberElite.onNext(list);
+            subscriberEsl.onError(new Throwable(databaseError.getMessage()));
         }
     };
 
@@ -119,15 +119,12 @@ public class FeedRepository implements FeedContract.IRepository {
                 EliteDto post = postSnapshot.getValue(EliteDto.class);
                 list.add(post);
             }
-
-            subscriberElite.onNext(list);
-
+            subscriberElite.onSuccess(list);
         }
 
         @Override
         public void onCancelled(DatabaseError databaseError) {
-            List<EliteDto> list = new ArrayList<>();
-            subscriberElite.onNext(list);
+            subscriberElite.onError(new Exception((databaseError.toException())));
         }
     };
 
