@@ -54,6 +54,9 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     ImageView mImgHeader;
 
     //media
+    @BindView(R.id.home_media_view)
+    View mMediaView;
+
     @BindView(R.id.player_play)
     ImageView mImgPlay;
 
@@ -208,6 +211,7 @@ public class HomeActivity extends BaseActivity implements NavigationView.OnNavig
     @Subscribe
     public void getFromService(GoPlayer goPlayer)
     {
+        mMediaView.setVisibility(View.VISIBLE);
         mTxtTitle.setText(goPlayer.title);
         mTxtDes.setText(goPlayer.des);
         mImgPlay.setImageResource(goPlayer.command == GoPlayer.DO_PLAY ? R.drawable.icon_paused : R.drawable.icon_played);
